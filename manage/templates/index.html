@@ -46,10 +46,9 @@ html, body {
 		<div class="content_middle">
 			<p>在master上执行的cmd</p>
 			<input type="text" value="" id="cmd_input"> <br> <br>
-			<input type="submit" value="提交" onclick="get_cmd_result()"> <br>
+			<input type="submit" value="提交" onclick="get_master_ip()"> <br>
 			<br>
 			<p>执行结果</p>
-			<input type="submit" value="查看数据" onclick="see_cmd_result()">
 			<textarea name="" id="cmd_result" cols="40" rows="10"></textarea>
 		</div>
 
@@ -225,24 +224,15 @@ html, body {
 </script>
 <script type="text/javascript">
 // 获取用户输入的cmd，到master执行并页面显示结果
-function get_cmd_result() {
+function get_master_ip() {
 	$.ajax({
 		type : "GET",
-		url : "/get_master_ip",
+		url : "/master_ip",
 		dataType : "json",
 		success : function(data) {
-		
-			const ip = data;
-			$("#master_ip").val(ip);
-			const cmd = document.getElementById("cmd_input").value;
-			const encode_cmd = Base64.encode(cmd);
-			$.ajax({
-				type : "GET",
-				url : "http://" + ip + ":12122/data/" + encode_cmd + "/",
-				success : function(cmddata) {
-					alert(cmddata);
-				}
-			});
+			$("#master_ip").val(data);
+			const cmddata = get_cmd_result(data);
+			alert(cmddata);
 		},
 		error : function() {
 			alert('master ip获取失败')
@@ -250,17 +240,28 @@ function get_cmd_result() {
 	});
 }
 
-
+function get_cmd_result(ip){
+	const cmd = document.getElementById("cmd_input").value;
+	const encode_cmd = Base64.encode(cmd);
+	$.ajax({
+			type : "GET",
+			url : "http://" + ip + ":12122/data/" + encode_cmd + "/",
+			success : function(cmddata) {
+				 const cmddata = show_cmd_result();
+				$("#cmd_result").val(cmddata);
+			}
+	});
+}
 
 //
-function see_cmd_result(){
+function show_cmd_result(){
 	const ip = document.getElementById("master_ip").value;
 	$.ajax({
 			type : "GET",
 			url : "http://" + ip + ":12122/cmd_result_data",
 			success : function(data) {
 				const cmddata = Base64.decode(data)
-				$("#cmd_result").val(cmddata);
+				retrun cmddata
 			},
 			error : function() {
 				alert('数据获取失败！！！')

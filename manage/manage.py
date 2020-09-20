@@ -58,20 +58,21 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/get_master_ip', methods=['GET', 'POST'])
-def get_master_ip():
+@app.route('/master_ip', methods=['GET', 'POST'])
+def master_ip():
     '''
-    get_master_ip数据路由
+    master_ip数据路由
     :return: T:master ip, F:列表中第一个ip
     '''
+    http = urllib3.PoolManager()
     for ip in IP_LIS:
         str_login_url = f'http://{ip}:12122/is_master'
-        http = urllib3.PoolManager()
         response = http.request('GET', str_login_url)
         if response.status == 200:
             if "1" in response.data.decode():
                 return jsonify(ip)
-    return jsonify(IP_LIS[0])
+    print('Can not get master IP')
+    return jsonify('0.0.0.0')
 
 
 # if __name__ == '__name__' :
