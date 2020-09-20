@@ -47,7 +47,7 @@ def is_master():
     return corss_domain(data)
 
 
-GLO_CMD_RESULT = None
+global GLO_CMD_RESULT
 
 
 @app.route('/data/<cmd>/', methods=['GET', 'POST'])

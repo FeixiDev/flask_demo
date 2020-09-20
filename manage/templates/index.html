@@ -224,6 +224,7 @@ html, body {
 </script>
 <script type="text/javascript">
 // 获取用户输入的cmd，到master执行并页面显示结果
+
 function get_master_ip() {
 	$.ajax({
 		type : "GET",
@@ -231,8 +232,7 @@ function get_master_ip() {
 		dataType : "json",
 		success : function(data) {
 			$("#master_ip").val(data);
-			const cmddata = get_cmd_result(data);
-			alert(cmddata);
+			get_cmd_result(data);
 		},
 		error : function() {
 			alert('master ip获取失败')
@@ -246,9 +246,8 @@ function get_cmd_result(ip){
 	$.ajax({
 			type : "GET",
 			url : "http://" + ip + ":12122/data/" + encode_cmd + "/",
-			success : function(cmddata) {
-				 const cmddata = show_cmd_result();
-				$("#cmd_result").val(cmddata);
+			success : function(data) {
+			show_cmd_result();
 			}
 	});
 }
@@ -261,7 +260,7 @@ function show_cmd_result(){
 			url : "http://" + ip + ":12122/cmd_result_data",
 			success : function(data) {
 				const cmddata = Base64.decode(data)
-				retrun cmddata
+				$("#cmd_result").val(cmddata);
 			},
 			error : function() {
 				alert('数据获取失败！！！')
