@@ -86,9 +86,11 @@ def oprt_calculate(A,B):
     global CALCULATE_RESULT 
     CALCULATE_RESULT = calculate(int(A),int(B))
     if CALCULATE_RESULT:
-        return "数据处理成功"
+        str_ok = "数据处理成功"
+        return corss_domain(str_ok)
     else:
-        return "数据处理失败"
+        str_err = "数据处理失败"
+        return corss_domain(str_err)
 #返回前端
 @app.route('/calculate_result', methods=['GET', 'POST'])
 def provide_calculate_result():
