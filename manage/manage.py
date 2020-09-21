@@ -65,7 +65,7 @@ def master_ip():
     :return: T:master ip, F:列表中第一个ip
     '''
     http = urllib3.PoolManager()
-    for ip in IP_LIS:
+    for ip in IP_LIST:
         str_login_url = f'http://{ip}:12122/is_master'
         response = http.request('GET', str_login_url)
         if response.status == 200:
