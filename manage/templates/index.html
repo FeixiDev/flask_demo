@@ -16,7 +16,7 @@ html, body {
 
 .content {
 	width: 500px;
-	height: 500px;
+	height: 700px;
 	margin: 0 auto;
 	position: relative;
 	top: 50%;
@@ -53,7 +53,7 @@ html, body {
 		<div class="content_middle">
 			<p>在master上执行的cmd</p>
 			<input type="text" value="" id="cmd_input"> <br> <br>
-			<input type="submit" value="提交" onclick="get_master_ip()"> <br>
+			<input type="submit" value="提交" onclick="ex_cmd_on_master()"> <br>
 			<br>
 			<p>执行结果</p>
 			<textarea name="" id="cmd_result" cols="40" rows="10"></textarea>
@@ -62,8 +62,17 @@ html, body {
 			<p>请输入值</p>
 			<label>x:</label> <input type="text" value="" id="x"> <label>y:</label>
 			<input type="text" value="" id="y"> <input type="submit"
-				value="提交" onclick="result_data_ip()"> <br>
-			<textarea name="" id="result_data_show" cols="20" rows="5"></textarea>
+				value="提交" onclick="calculate_on_master()"> <br>
+			<table class="count">
+				<thead>
+					<tr>
+						<th>算法</th>
+						<th>值</th>
+					</tr>
+				</thead>
+				<tbody id="show_calculate">
+				</tbody>
+			</table>
 		</div>
 
 	</div>
@@ -239,7 +248,7 @@ html, body {
 <script type="text/javascript">
 // 获取用户输入的cmd，到master执行并页面显示结果
 
-function get_master_ip() {
+function ex_cmd_on_master() {
 	$.ajax({
 		type : "GET",
 		url : "/master_ip",
@@ -259,7 +268,7 @@ function get_cmd_result(ip){
 	const encode_cmd = Base64.encode(cmd);
 	$.ajax({
 			type : "GET",
-			url : "http://" + ip + ":12122/data/" + encode_cmd + "/",
+			url : "http://" + ip + ":12122/ex_cmd/" + encode_cmd + "/",
 			success : function(data) {
 			show_cmd_result();
 			}
@@ -271,10 +280,10 @@ function show_cmd_result(){
 	const ip = document.getElementById("master_ip").value;
 	$.ajax({
 			type : "GET",
-			url : "http://" + ip + ":12122/cmd_result_data",
+			url : "http://" + ip + ":12122/ex_cmd_result",
 			success : function(data) {
-				const cmddata = Base64.decode(data)
-				$("#cmd_result").val(cmddata);
+				const cmd_data = Base64.decode(data)
+				$("#cmd_result").val(cmd_data);
 			},
 			error : function() {
 				alert('数据获取失败！！！')
@@ -285,14 +294,14 @@ function show_cmd_result(){
 </script>
 <script type="text/javascript">
 
-function result_data_ip() {
+function calculate_on_master() {
 	$.ajax({
 		type : "GET",
 		url : "/master_ip",
 		dataType : "json",
 		success : function(data) {
 			$("#master_ip").val(data);
-			result_data(data);
+			get_calculate_result(data);
 		},
 		error : function() {
 			alert('master ip获取失败')
@@ -300,25 +309,29 @@ function result_data_ip() {
 	});
 }
 
-function result_data(ip){
+function get_calculate_result(ip){
 	const x = document.getElementById("x").value;
 	const y = document.getElementById("y").value;
 	$.ajax({
 			type : "GET",
-			url : "http://" + ip + ":12122/data/" + x + "/"+ y + "/",
+			url : "http://" + ip + ":12122/calc/" + x + "/"+ y + "/",
 			success : function(data) {
-			result_data_show();
+			show_calculate_result();
 			}
 	});
 }
 
-function result_data_show(){
+function show_calculate_result(){
 const ip = document.getElementById("master_ip").value;
 	$.ajax({
 			type : "GET",
-			url : "http://" + ip + ":12122/result_data_show",
+			url : "http://" + ip + ":12122/calculate_result",
 			success : function(data) {
-				$("#result_data_show").val(data);
+				for( i in data){
+            		tr = '<td >'+ i +'</td>'+
+            					'<td >'+data[i]+'</td>'
+            					$("#show_calculate").append('<tr >'+tr+'</tr>')
+            		}
 			}
 	});
 }

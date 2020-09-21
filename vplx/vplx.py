@@ -23,7 +23,6 @@ def read_flag_file():
         result = f.read()
     return result
 
-
 def corss_domain(data):
     '''
     数据跨域
@@ -36,7 +35,6 @@ def corss_domain(data):
     response.headers['Access-Control-Allow-Headers'] = 'x-requested-with'
     return response
 
-
 @app.route('/is_master')
 def is_master():
     '''
@@ -46,12 +44,10 @@ def is_master():
     data = read_flag_file()
     return corss_domain(data)
 
-
 global GLO_CMD_RESULT
 
-
-@app.route('/data/<cmd>/', methods=['GET', 'POST'])
-def cmd_result(cmd):
+@app.route('/ex_cmd/<cmd>/', methods=['GET', 'POST'])
+def oprt_ex_cmd(cmd):
     '''
     数据路由，接收cmd返回执行结果
     :param cmd: 用户输入命令
@@ -70,11 +66,8 @@ def cmd_result(cmd):
         str_err = "错误命令无法执行"
         return corss_domain(str_err)
 
-
-
-@app.route('/cmd_result_data', methods=['GET', 'POST'])
-def cmd_result_data():
-    global GLO_CMD_RESULT
+@app.route('/ex_cmd_result', methods=['GET', 'POST'])
+def ex_cmd_result():
     '''
     数据路由
     :return: 执行结果`
@@ -83,22 +76,21 @@ def cmd_result_data():
 
 global DATA_PROCESSING 
 #后台处理函数
-def the_data_processing(x,y):
+def calculate(x,y):
     return {"add":x+y,"subtract":x-y,"multiply":x*y,"divided":x/y}
 
 #接收前端数据
-@app.route('/data/<x>/<y>/', methods=['GET', 'POST'])
-def result_data(x,y):
+@app.route('/calc/<x>/<y>/', methods=['GET', 'POST'])
+def oprt_calculate(x,y):
     global DATA_PROCESSING 
-    DATA_PROCESSING = the_data_processing(x,y)
+    DATA_PROCESSING = the_data_processing(int(x),int(y))
     if DATA_PROCESSING:
         return "数据处理成功"
     else:
         return "数据处理失败"
 #返回前端
-@app.route('/result_data_show', methods=['GET', 'POST'])
-def result_data_show():
-    global DATA_PROCESSING 
+@app.route('/calculate_result', methods=['GET', 'POST'])
+def provide_calculate_result():
     return  corss_domain(DATA_PROCESSING)
 
 
