@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, jsonify
 
 import urllib3
 
-IP_LIS = ['10.203.1.223', '10.203.1.224']
+IP_LIST = ['10.203.1.223', '10.203.1.224']
 
 app = Flask(__name__)
 

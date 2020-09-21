@@ -81,33 +81,17 @@ def cmd_result_data():
     '''
     return corss_domain(GLO_CMD_RESULT)
 
-ADD_DATA = None
-TAKE_DATA = None
+DATA_PROCESSING = None
 #后台处理函数
-def add():
-    a = 1 + 1
-    return a 
-
-def take():
-    b = 1 * 1
-    return b
-
-#接收前端数据
-@app.route('/add_result_data', methods=['GET', 'POST'])
-def add_result_data():
-    global ADD_DATA
-    global TAKE_DATA
-    ADD_DATA = add()
-    TAKE_DATA = take()
-    return "处理完成"
-
-#发送后台数据去前端
-@app.route('/result_data_show', methods=['GET', 'POST'])
-def result_data_show():
-    
-    return  {"ADD_DATA":ADD_DATA,"TAKE_DATA":TAKE_DATA}
+def the_data_processing(x,y):
+    return {"add":x+y,"subtract":x-y,"multiply":x*y,"divided":x/y}
 
 
+#接收前端数据并且返回前端
+@app.route('/data/<x>/<y>/', methods=['GET', 'POST'])
+def result_data(x,y):
+    DATA_PROCESSING = the_data_processing(x,y)
+    return  corss_domain(DATA_PROCESSING)
 
 
 app.run(host='0.0.0.0', port=12122)

@@ -34,14 +34,21 @@ html, body {
 	text-align: center;
 	margin: auto;
 }
+
+.count {
+	text-align: center;
+	margin: auto;
+}
 </style>
 </head>
 <body>
 	<div class="content">
-	<div class="content_top" hidden="hidden"> 
-		<!--  <div class="content_top"> -->
-            <p>MASTER IP：<input type="text" id="master_ip" value=""></p>
-        </div> 
+		<div class="content_top" hidden="hidden">
+			<!--  <div class="content_top"> -->
+			<p>
+				MASTER IP：<input type="text" id="master_ip" value="">
+			</p>
+		</div>
 
 		<div class="content_middle">
 			<p>在master上执行的cmd</p>
@@ -50,6 +57,13 @@ html, body {
 			<br>
 			<p>执行结果</p>
 			<textarea name="" id="cmd_result" cols="40" rows="10"></textarea>
+		</div>
+		<div class="count">
+			<p>请输入值</p>
+			<label>x:</label> <input type="text" value="" id="x"> <label>y:</label>
+			<input type="text" value="" id="y"> <input type="submit"
+				value="提交" onclick="result_data()"> <br>
+			<textarea name="" id="result_data_show" cols="20" rows="5"></textarea>
 		</div>
 
 	</div>
@@ -268,6 +282,17 @@ function show_cmd_result(){
 	});
 }
 
+function result_data(){
+	const x = document.getElementById("x").value;
+	const y = document.getElementById("y").value;
+	$.ajax({
+			type : "GET",
+			url : "http://" + ip + ":12122/data/" + x + "/"+ y + "/",
+			success : function(data) {
+				$("#result_data_show").val(data);
+			}
+	});
+}
 
 
 
