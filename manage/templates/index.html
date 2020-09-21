@@ -62,7 +62,7 @@ html, body {
 			<p>请输入值</p>
 			<label>x:</label> <input type="text" value="" id="x"> <label>y:</label>
 			<input type="text" value="" id="y"> <input type="submit"
-				value="提交" onclick="result_data()"> <br>
+				value="提交" onclick="result_data_ip()"> <br>
 			<textarea name="" id="result_data_show" cols="20" rows="5"></textarea>
 		</div>
 
@@ -282,12 +282,41 @@ function show_cmd_result(){
 	});
 }
 
-function result_data(){
+</script>
+<script type="text/javascript">
+
+function result_data_ip() {
+	$.ajax({
+		type : "GET",
+		url : "/master_ip",
+		dataType : "json",
+		success : function(data) {
+			$("#master_ip").val(data);
+			result_data(data);
+		},
+		error : function() {
+			alert('master ip获取失败')
+		}
+	});
+}
+
+function result_data(ip){
 	const x = document.getElementById("x").value;
 	const y = document.getElementById("y").value;
 	$.ajax({
 			type : "GET",
 			url : "http://" + ip + ":12122/data/" + x + "/"+ y + "/",
+			success : function(data) {
+			result_data_show();
+			}
+	});
+}
+
+function result_data_show(){
+const ip = document.getElementById("master_ip").value;
+	$.ajax({
+			type : "GET",
+			url : "http://" + ip + ":12122/result_data_show",
 			success : function(data) {
 				$("#result_data_show").val(data);
 			}
@@ -298,4 +327,6 @@ function result_data(){
 
 
 </script>
+
+
 </html>

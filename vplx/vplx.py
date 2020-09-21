@@ -81,17 +81,26 @@ def cmd_result_data():
     '''
     return corss_domain(GLO_CMD_RESULT)
 
-DATA_PROCESSING = None
+global DATA_PROCESSING 
 #后台处理函数
 def the_data_processing(x,y):
     return {"add":x+y,"subtract":x-y,"multiply":x*y,"divided":x/y}
 
-
-#接收前端数据并且返回前端
+#接收前端数据
 @app.route('/data/<x>/<y>/', methods=['GET', 'POST'])
 def result_data(x,y):
+    global DATA_PROCESSING 
     DATA_PROCESSING = the_data_processing(x,y)
+    if DATA_PROCESSING:
+        return "数据处理成功"
+    else:
+        return "数据处理失败"
+#返回前端
+@app.route('/result_data_show', methods=['GET', 'POST'])
+def result_data_show():
+    global DATA_PROCESSING 
     return  corss_domain(DATA_PROCESSING)
+
 
 
 app.run(host='0.0.0.0', port=12122)
