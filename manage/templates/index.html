@@ -53,15 +53,15 @@ html, body {
 		<div class="content_middle">
 			<p>在master上执行的cmd</p>
 			<input type="text" value="" id="cmd_input"> <br> <br>
-			<input type="submit" value="提交" onclick="ex_cmd_on_master()"> <br>
+			<input type="submit" value="提交" onclick="get_master_cmd_result()"> <br>
 			<br>
 			<p>执行结果</p>
 			<textarea name="" id="cmd_result" cols="40" rows="10"></textarea>
 		</div>
 		<div class="count">
 			<p>请输入值</p>
-			<label>x:</label> <input type="text" value="" id="x"> <label>y:</label>
-			<input type="text" value="" id="y"> <input type="submit"
+			<label>数值A:</label> <input type="text" value="" id="A"> <label>数值:</label>
+			<input type="text" value="" id="B"> <input type="submit"
 				value="提交" onclick="calculate_on_master()"> <br>
 			<table class="count">
 				<thead>
@@ -248,14 +248,14 @@ html, body {
 <script type="text/javascript">
 // 获取用户输入的cmd，到master执行并页面显示结果
 
-function ex_cmd_on_master() {
+function get_master_cmd_result() {
 	$.ajax({
 		type : "GET",
 		url : "/master_ip",
 		dataType : "json",
-		success : function(data) {
-			$("#master_ip").val(data);
-			get_cmd_result(data);
+		success : function(master_ip) {
+			$("#master_ip").val(master_ip);
+			get_cmd_result(master_ip);
 		},
 		error : function() {
 			alert('master ip获取失败')
@@ -299,9 +299,9 @@ function calculate_on_master() {
 		type : "GET",
 		url : "/master_ip",
 		dataType : "json",
-		success : function(data) {
-			$("#master_ip").val(data);
-			get_calculate_result(data);
+		success : function(master_ip) {
+			$("#master_ip").val(master_ip);
+			get_calculate_result(master_ip);
 		},
 		error : function() {
 			alert('master ip获取失败')
@@ -310,11 +310,11 @@ function calculate_on_master() {
 }
 
 function get_calculate_result(ip){
-	const x = document.getElementById("x").value;
-	const y = document.getElementById("y").value;
+	const A = document.getElementById("A").value;
+	const B = document.getElementById("B").value;
 	$.ajax({
 			type : "GET",
-			url : "http://" + ip + ":12122/calc/" + x + "/"+ y + "/",
+			url : "http://" + ip + ":12122/calc/" + A + "/"+ B + "/",
 			success : function(data) {
 			show_calculate_result();
 			}
@@ -326,10 +326,10 @@ const ip = document.getElementById("master_ip").value;
 	$.ajax({
 			type : "GET",
 			url : "http://" + ip + ":12122/calculate_result",
-			success : function(data) {
-				for( i in data){
+			success : function(calculate_result) {
+				for( i in calculate_result){
             		tr = '<td >'+ i +'</td>'+
-            					'<td >'+data[i]+'</td>'
+            					'<td >'+calculate_result[i]+'</td>'
             					$("#show_calculate").append('<tr >'+tr+'</tr>')
             		}
 			}

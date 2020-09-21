@@ -74,24 +74,25 @@ def ex_cmd_result():
     '''
     return corss_domain(GLO_CMD_RESULT)
 
-global DATA_PROCESSING 
+global CALCULATE_RESULT
+
 #后台处理函数
-def calculate(x,y):
-    return {"add":x+y,"subtract":x-y,"multiply":x*y,"divided":x/y}
+def calculate(A,B):
+    return {"add":A+B,"subtract":A-B,"multiply":A*B,"divided":A/B}
 
 #接收前端数据
-@app.route('/calc/<x>/<y>/', methods=['GET', 'POST'])
-def oprt_calculate(x,y):
-    global DATA_PROCESSING 
-    DATA_PROCESSING = the_data_processing(int(x),int(y))
-    if DATA_PROCESSING:
+@app.route('/calc/<A>/<B>/', methods=['GET', 'POST'])
+def oprt_calculate(A,B):
+    global CALCULATE_RESULT 
+    CALCULATE_RESULT = calculate(int(A),int(B))
+    if CALCULATE_RESULT:
         return "数据处理成功"
     else:
         return "数据处理失败"
 #返回前端
 @app.route('/calculate_result', methods=['GET', 'POST'])
 def provide_calculate_result():
-    return  corss_domain(DATA_PROCESSING)
+    return  corss_domain(CALCULATE_RESULT)
 
 
 
