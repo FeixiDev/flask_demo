@@ -62,7 +62,7 @@ html, body {
 			<p>请输入值</p>
 			<label>数值A:</label> <input type="text" value="" id="A"> <label>数值B:</label>
 			<input type="text" value="" id="B"> <input type="submit"
-				value="提交" onclick="calculate_on_master()"> <br>
+				value="提交" onclick="get_master_calculate_result()"> <br>
 			<table class="count">
 				<thead>
 					<tr>
@@ -265,11 +265,11 @@ function get_master_cmd_result() {
 
 function get_cmd_result(ip){
 	const cmd = document.getElementById("cmd_input").value;
-	const encode_cmd = Base64.encode(cmd);
+	const encrypt_cmd = Base64.encode(cmd);
 	$.ajax({
 			type : "GET",
-			url : "http://" + ip + ":12122/ex_cmd/" + encode_cmd + "/",
-			success : function(operation_feedback) {
+			url : "http://" + ip + ":12122/ex_cmd/" + encrypt_cmd + "/",
+			success : function() {
 			show_cmd_result();
 			}
 	});
@@ -282,8 +282,8 @@ function show_cmd_result(){
 			type : "GET",
 			url : "http://" + ip + ":12122/ex_cmd_result",
 			success : function(cmd_result) {
-				const encryption_cmd_result = Base64.decode(cmd_result)
-				$("#cmd_result").val(encryption_cmd_result);
+				const decrypt_cmd_result = Base64.decode(cmd_result)
+				$("#cmd_result").val(decrypt_cmd_result);
 			},
 			error : function() {
 				alert('数据获取失败！！！')
@@ -294,7 +294,7 @@ function show_cmd_result(){
 </script>
 <script type="text/javascript">
 
-function calculate_on_master() {
+function get_master_calculate_result() {
 	$.ajax({
 		type : "GET",
 		url : "/master_ip",
@@ -315,7 +315,7 @@ function get_calculate_result(ip){
 	$.ajax({
 			type : "GET",
 			url : "http://" + ip + ":12122/calc/" + A + "/"+ B + "/",
-			success : function(operation_feedback) {
+			success : function() {
 			show_calculate_result();
 			}
 	});

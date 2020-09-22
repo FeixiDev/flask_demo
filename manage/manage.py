@@ -29,12 +29,11 @@ def index():
 def master_ip():
     '''
     master_ip数据路由
-    :return: T:master ip, F:列表中第一个ip
     '''
     http = urllib3.PoolManager()
     for ip in IP_LIST:
-        str_login_url = f'http://{ip}:12122/is_master'
-        response = http.request('GET', str_login_url)
+        is_master_url = f'http://{ip}:12122/is_master'
+        response = http.request('GET', is_master_url)
         if response.status == 200:
             if "1" in response.data.decode():
                 return jsonify(ip)
