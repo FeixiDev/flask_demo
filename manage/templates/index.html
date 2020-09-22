@@ -60,7 +60,7 @@ html, body {
 		</div>
 		<div class="count">
 			<p>请输入值</p>
-			<label>数值A:</label> <input type="text" value="" id="A"> <label>数值:</label>
+			<label>数值A:</label> <input type="text" value="" id="A"> <label>数值B:</label>
 			<input type="text" value="" id="B"> <input type="submit"
 				value="提交" onclick="calculate_on_master()"> <br>
 			<table class="count">
@@ -269,7 +269,7 @@ function get_cmd_result(ip){
 	$.ajax({
 			type : "GET",
 			url : "http://" + ip + ":12122/ex_cmd/" + encode_cmd + "/",
-			success : function(data) {
+			success : function(operation_feedback) {
 			show_cmd_result();
 			}
 	});
@@ -281,9 +281,9 @@ function show_cmd_result(){
 	$.ajax({
 			type : "GET",
 			url : "http://" + ip + ":12122/ex_cmd_result",
-			success : function(data) {
-				const cmd_data = Base64.decode(data)
-				$("#cmd_result").val(cmd_data);
+			success : function(cmd_result) {
+				const encryption_cmd_result = Base64.decode(cmd_result)
+				$("#cmd_result").val(encryption_cmd_result);
 			},
 			error : function() {
 				alert('数据获取失败！！！')
@@ -315,7 +315,7 @@ function get_calculate_result(ip){
 	$.ajax({
 			type : "GET",
 			url : "http://" + ip + ":12122/calc/" + A + "/"+ B + "/",
-			success : function(data) {
+			success : function(operation_feedback) {
 			show_calculate_result();
 			}
 	});
