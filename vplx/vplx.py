@@ -23,7 +23,6 @@ def read_flag_file():
         result = f.read()
     return result
 
-
 def corss_domain(data):
     '''
     数据跨域
@@ -36,49 +35,67 @@ def corss_domain(data):
     response.headers['Access-Control-Allow-Headers'] = 'x-requested-with'
     return response
 
-
 @app.route('/is_master')
 def is_master():
     '''
     数据路由，判断master ip
     :return: 0/1?None
     '''
-    data = read_flag_file()
-    return corss_domain(data)
+    flag = read_flag_file()
+    return corss_domain(flag)
 
-data = ['']
-@app.route('/data/<cmd>/', methods=['GET', 'POST'])
-def cmd_result(cmd):
+global GLO_CMD_RESULT
+
+@app.route('/ex_cmd/<cmd>/', methods=['GET', 'POST'])
+def oprt_ex_cmd(cmd):
     '''
     数据路由，接收cmd返回执行结果
     :param cmd: 用户输入命令
     :return: 执行结果
     '''
-    cmd_str = base64.b64decode(cmd)
+    decrypt_cmd_result = base64.b64decode(cmd)
+    global GLO_CMD_RESULT
 
-    data.pop()
-
-    if subprocess.getstatusoutput(cmd_str):
-        cmd_result=subprocess.getoutput(cmd_str)
-    
-        data_value = base64.b64encode(cmd_result.encode('utf-8'))
-        data.append(data_value.decode())
-
+    if subprocess.getstatusoutput(decrypt_cmd_result):
+        cmd_result = subprocess.getoutput(decrypt_cmd_result)
+        encrypt_cmd_result = base64.b64encode(cmd_result.encode('utf-8'))
+        GLO_CMD_RESULT = encrypt_cmd_result.decode()
         str_ok = "命令执行成功"
         return corss_domain(str_ok)
     else:
         str_err = "错误命令无法执行"
         return corss_domain(str_err)
 
-
-@app.route('/cmd_result_data', methods=['GET', 'POST'])
-def cmd_result_data():
+@app.route('/ex_cmd_result', methods=['GET', 'POST'])
+def ex_cmd_result():
     '''
     数据路由
     :return: 执行结果`
     '''
+    return corss_domain(GLO_CMD_RESULT)
 
-    return corss_domain(data[-1])
+global CALCULATE_RESULT
+
+#后台处理函数
+def calculate(A,B):
+    return {"add":A+B,"subtract":A-B,"multiply":A*B,"divided":A/B}
+
+#接收前端数据
+@app.route('/calc/<A>/<B>/', methods=['GET', 'POST'])
+def oprt_calculate(A,B):
+    global CALCULATE_RESULT 
+    CALCULATE_RESULT = calculate(int(A),int(B))
+    if CALCULATE_RESULT:
+        str_ok = "数据处理成功"
+        return corss_domain(str_ok)
+    else:
+        str_err = "数据处理失败"
+        return corss_domain(str_err)
+#返回前端
+@app.route('/calculate_result', methods=['GET', 'POST'])
+def provide_calculate_result():
+    return  corss_domain(CALCULATE_RESULT)
+
 
 
 app.run(host='0.0.0.0', port=12122)

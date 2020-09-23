@@ -1,58 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
 
-    <title>manage_flask</title>
-    <style>
-        html, body {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-        .content{
-            width: 500px;
-            height: 500px;
-            margin: 0 auto;
-            position: relative;
-            top: 50%;
-            margin-top: -250px;
-            border:1px dashed #000;
-        }
-        .content_top{
-            text-align: center;
-            margin: auto;
-            border-bottom: 1px solid #000000;
-        }
-        .content_middle{
-            text-align: center;
-            margin: auto;
-        }
-    </style>
+<title>manage_flask</title>
+<style>
+html, body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+.content {
+	width: 500px;
+	height: 700px;
+	margin: 0 auto;
+	position: relative;
+	top: 50%;
+	margin-top: -250px;
+	border: 1px dashed #000;
+}
+
+.content_top {
+	text-align: center;
+	margin: auto;
+	border-bottom: 1px solid #000000;
+}
+
+.content_middle {
+	text-align: center;
+	margin: auto;
+}
+
+.count {
+	text-align: center;
+	margin: auto;
+}
+</style>
 </head>
 <body>
-    <div class="content">
-        <div class="content_top">
-            <p>MASTER IP：<input type="text" id="master_ip" value=""></p>
-        </div>
+	<div class="content">
+		<div class="content_top" hidden="hidden">
+			<!--  <div class="content_top"> -->
+			<p>
+				MASTER IP：<input type="text" id="master_ip" value="">
+			</p>
+		</div>
 
-        <div class="content_middle">
-            <p>在master上执行的cmd</p>
-            <input type="text" value="" id="cmd_input">
-            <br>
-            <br>
-            <input type="submit" value="提交" onclick="get_cmd_result()">
-            <br>
-            <br>
-            <p>执行结果</p>
-            <input type="submit" value="查看数据" onclick="see_cmd_result()">
-            <textarea name="" id="cmd_result" cols="40" rows="10"></textarea>
-        </div>
+		<div class="content_middle">
+			<p>在master上执行的cmd</p>
+			<input type="text" value="" id="cmd_input"> <br> <br>
+			<input type="submit" value="提交" onclick="get_master_cmd_result()"> <br>
+			<br>
+			<p>执行结果</p>
+			<textarea name="" id="cmd_result" cols="40" rows="10"></textarea>
+		</div>
+		<div class="count">
+			<p>请输入值</p>
+			<label>数值A:</label> <input type="text" value="" id="A"> <label>数值B:</label>
+			<input type="text" value="" id="B"> <input type="submit"
+				value="提交" onclick="get_master_calculate_result()"> <br>
+			<table class="count">
+				<thead>
+					<tr>
+						<th>算法</th>
+						<th>值</th>
+					</tr>
+				</thead>
+				<tbody id="show_calculate">
+				</tbody>
+			</table>
+		</div>
 
-    </div>
+	</div>
 </body>
 <script>
     const Base64 = {
@@ -221,56 +244,102 @@
                 return this.UTF8ToUTF16(res.join(''));
             }
         };
+</script>
+<script type="text/javascript">
+// 获取用户输入的cmd，到master执行并页面显示结果
 
-    // 获取master ip
-    function get_master_ip() {
-        $.ajax({
-            type: "GET",
-            url: "/get_master_ip",
-            dataType: "json",
-            success: function (data) {
-                $("#master_ip").val(data);
-            },
-            error: function () {
-                alert('master ip获取失败')
-            }
-        });
-    }
+function get_master_cmd_result() {
+	$.ajax({
+		type : "GET",
+		url : "/master_ip",
+		dataType : "json",
+		success : function(master_ip) {
+			$("#master_ip").val(master_ip);
+			get_cmd_result(master_ip);
+		},
+		error : function() {
+			alert('master ip获取失败')
+		}
+	});
+}
 
-    get_master_ip();
+function get_cmd_result(ip){
+	const cmd = document.getElementById("cmd_input").value;
+	const encrypt_cmd = Base64.encode(cmd);
+	$.ajax({
+			type : "GET",
+			url : "http://" + ip + ":12122/ex_cmd/" + encrypt_cmd + "/",
+			success : function() {
+			show_cmd_result();
+			}
+	});
+}
 
-    // 获取用户输入的cmd，到master执行并页面显示结果
-    function get_cmd_result(){
-        get_master_ip();
-        const cmd=document.getElementById("cmd_input").value;
-        const ip=document.getElementById("master_ip").value;
-        const encode_cmd = Base64.encode(cmd);
-        $.ajax({
-        type: "GET",
-        url: "http://"+ip+":12122/data/"+encode_cmd+"/",
-        success:function (cmddata) {
-        	alert(cmddata)
-            }
-        });
-    }
-    
-    
-    function see_cmd_result(){
-    const ip=document.getElementById("master_ip").value;
-       $.ajax({
-            type: "GET",
-            url: "http://"+ip+":12122/cmd_result_data",
-            success: function (data) {
-            	const cmddata=Base64.decode(data)
-                $("#cmd_result").val(cmddata);
-            },
-            error: function () {
-                alert('数据获取失败！！！')
-            }
-        });
-    
-    }
+//
+function show_cmd_result(){
+	const ip = document.getElementById("master_ip").value;
+	$.ajax({
+			type : "GET",
+			url : "http://" + ip + ":12122/ex_cmd_result",
+			success : function(cmd_result) {
+				const decrypt_cmd_result = Base64.decode(cmd_result)
+				$("#cmd_result").val(decrypt_cmd_result);
+			},
+			error : function() {
+				alert('数据获取失败！！！')
+			}
+	});
+}
 
 </script>
+<script type="text/javascript">
+
+function get_master_calculate_result() {
+	$.ajax({
+		type : "GET",
+		url : "/master_ip",
+		dataType : "json",
+		success : function(master_ip) {
+			$("#master_ip").val(master_ip);
+			get_calculate_result(master_ip);
+		},
+		error : function() {
+			alert('master ip获取失败')
+		}
+	});
+}
+
+function get_calculate_result(ip){
+	const A = document.getElementById("A").value;
+	const B = document.getElementById("B").value;
+	$.ajax({
+			type : "GET",
+			url : "http://" + ip + ":12122/calc/" + A + "/"+ B + "/",
+			success : function() {
+			show_calculate_result();
+			}
+	});
+}
+
+function show_calculate_result(){
+const ip = document.getElementById("master_ip").value;
+	$.ajax({
+			type : "GET",
+			url : "http://" + ip + ":12122/calculate_result",
+			success : function(calculate_result) {
+				for( i in calculate_result){
+            		tr = '<td >'+ i +'</td>'+
+            					'<td >'+calculate_result[i]+'</td>'
+            					$("#show_calculate").append('<tr >'+tr+'</tr>')
+            		}
+			}
+	});
+}
+
+
+
+
+</script>
+
 
 </html>
